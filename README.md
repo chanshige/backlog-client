@@ -9,7 +9,7 @@ require __DIR__ . '/vendor/autoload.php';
 // backlog config
 $config = [
     'spaceUri' => 'space.backlog-uri.example',
-    'apiKeu' => 'your-api-key'
+    'apiKey' => 'your-api-key'
 ];
 
 $backlog = (new \Chanshige\Backlog\Factory)->newInstance(
