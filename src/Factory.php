@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Chanshige\Backlog;
 
+use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
-use Aura\Di\Exception;
+use Chanshige\AuraDi\Config\Common;
 use Exception\BacklogClientException;
+use Exception;
 
 /**
  * Class Factory
@@ -26,10 +28,12 @@ final class Factory
     public function newInstance(
         string $name,
         array $params = [],
-        $configured = [\Chanshige\AuraDi\Config\Common::class],
-        $resolve = ContainerBuilder::AUTO_RESOLVE
+        array $configured = [],
+        bool $resolve = ContainerBuilder::AUTO_RESOLVE
     ) {
         try {
+            $configured = count($configured) > 0 ? $configured : [Common::class];
+
             return $this->newContainer($configured, $resolve)
                 ->newInstance($name, $params);
         } catch (Exception $e) {
@@ -42,10 +46,10 @@ final class Factory
      *
      * @param array $configClasses
      * @param bool  $autoResolve Use the auto-resolver (default:false)
-     * @return \Aura\Di\Container
+     * @return Container
      * @throws BacklogClientException
      */
-    public function newContainer($configClasses = [], $autoResolve = false)
+    public function newContainer(array $configClasses = [], bool $autoResolve = false)
     {
         try {
             return (new ContainerBuilder)->newConfiguredInstance($configClasses, $autoResolve);

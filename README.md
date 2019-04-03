@@ -6,16 +6,16 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
+use Chanshige\Backlog\Client;
+use Chanshige\Backlog\Factory;
+
 // backlog config
 $config = [
     'spaceUri' => 'space.backlog-uri.example',
     'apiKey' => 'your-api-key'
 ];
 
-$backlog = (new \Chanshige\Backlog\Factory)->newInstance(
-    \Chanshige\Backlog\Client::class,
-    $config
-);
+$backlog = (new Factory)->newInstance(Client::class, $config);
 
 //[GET] backlog info
 $response = $backlog->space()->get();

@@ -1,6 +1,7 @@
 <?php
 namespace Chanshige\Backlog\Factory;
 
+use Aura\Di\Injection\Factory;
 use Chanshige\Backlog\Collection\ArrayList;
 use Chanshige\Backlog\Interfaces\UriInterface;
 use Exception\BacklogClientException;
@@ -10,11 +11,8 @@ use Exception\BacklogClientException;
  *
  * @package Chanshige\Backlog\Factory
  */
-final class ResourceFactory
+final class ResourceFactory extends ArrayList
 {
-    /** @var iterable */
-    private $map;
-
     /**
      * ResourceFactory constructor.
      *
@@ -22,7 +20,7 @@ final class ResourceFactory
      */
     public function __construct(iterable $map = [])
     {
-        $this->map = new ArrayList($map);
+        parent::__construct($map);
     }
 
     /**
@@ -35,11 +33,11 @@ final class ResourceFactory
      */
     public function newInstance(string $name, array $params, UriInterface $uri)
     {
-        if (!$this->map->exists($name)) {
+        if (!$this->exists($name)) {
             throw new BacklogClientException("Oops!! resource name:{$name} is undefined.");
         }
-        /** @var \Aura\Di\Injection\Factory $factory */
-        $factory = $this->map->get($name);
+        /** @var Factory $factory */
+        $factory = $this->get($name);
 
         return $factory($params, $uri);
     }
@@ -51,6 +49,6 @@ final class ResourceFactory
      */
     public function __toString(): string
     {
-        return var_export($this->map->toArray(), true);
+        return var_export($this->toArray(), true);
     }
 }

@@ -30,6 +30,7 @@ final class Common extends ContainerConfig
         $di->params[ResourceFactory::class]['map'] = [
             'issues' => $di->newFactory(Issues::class),
             'space' => $di->newFactory(Space::class),
-            'users' => $di->newFactory(Users::class),];
+            'users' => $di->newFactory(Users::class),
+        ];
     }
 }
