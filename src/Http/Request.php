@@ -4,7 +4,6 @@ namespace Chanshige\Backlog\Http;
 use Chanshige\Backlog\Interfaces\RequestInterface;
 use Chanshige\SimpleCurl\CurlInterface;
 use Chanshige\SimpleCurl\Exception\CurlException;
-use Exception\BacklogClientException;
 
 use function json_unescaped_encode;
 
@@ -97,11 +96,6 @@ final class Request implements RequestInterface
         return $this->invoke();
     }
 
-    public function __call($name, $arguments)
-    {
-        throw new BacklogClientException("Oops!! resource {$name} is undefined.");
-    }
-
     /**
      * @param string $url
      */
@@ -119,7 +113,9 @@ final class Request implements RequestInterface
      */
     private function setCommonPostFields(): void
     {
-        $this->curl->setOpt(CURLOPT_HTTPHEADER, $this->header);
+        if (count($this->header) > 0) {
+            $this->curl->setOpt(CURLOPT_HTTPHEADER, $this->header);
+        }
         if (!is_null($this->parameters)) {
             $this->curl->setOpt(CURLOPT_POSTFIELDS, $this->parameters);
         }
@@ -130,7 +126,7 @@ final class Request implements RequestInterface
      *
      * @return string
      */
-    private function invoke()
+    private function invoke(): string
     {
         $retry = false;
         $cnt = 0;
@@ -157,7 +153,7 @@ final class Request implements RequestInterface
      * @param int $status
      * @throws CurlException
      */
-    private function pauseOnRetry($retries, $status)
+    private function pauseOnRetry(int $retries, int $status)
     {
         if ($retries <= self::ERROR_MAX_RETRY) {
             usleep((int)(pow(4, $retries) * 100000) + 600000);

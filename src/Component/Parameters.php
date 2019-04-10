@@ -13,8 +13,8 @@ abstract class Parameters
     /** @var string */
     protected $name = '';
 
-    /** @var ArrayList */
-    private $params;
+    /** @var array */
+    private $params = [];
 
     /**
      * Parameters constructor.
@@ -23,8 +23,7 @@ abstract class Parameters
      */
     public function __construct(array $input = [])
     {
-        array_unshift($input, $this->name);
-        $this->params = new ArrayList($input);
+        $this->params = array_merge([$this->name], $input);
     }
 
     /**
@@ -36,9 +35,9 @@ abstract class Parameters
      */
     public function __call(string $name, array $args)
     {
-        $this->params->add($name);
+        $this->params[] = $name;
         if (isset($args[0])) {
-            $this->params->add($args[0]);
+            $this->params[] = $args[0];
         }
 
         return $this;
@@ -49,6 +48,6 @@ abstract class Parameters
      */
     public function getIterator()
     {
-        return $this->params;
+        return new ArrayList($this->params);
     }
 }

@@ -55,7 +55,7 @@ abstract class AbstractResource extends Parameters
     /**
      * GET Request.
      *
-     * @return mixed
+     * @return string
      */
     public function get()
     {
@@ -64,6 +64,19 @@ abstract class AbstractResource extends Parameters
         }
 
         return $this->invoke()->get();
+    }
+
+    /**
+     * Post request.
+     *
+     * @return mixed
+     */
+    public function post()
+    {
+        return $this->invoke(
+            http_build_query($this->params),
+            ['Content-Type: application/x-www-form-urlencoded']
+        )->post();
     }
 
     /**
@@ -76,17 +89,9 @@ abstract class AbstractResource extends Parameters
     private function invoke($parameters = null, $header = []): RequestInterface
     {
         return $this->request->__invoke(
-            (string)$this->uri->withPath($this->modifyPath()),
+            (string)$this->uri->withPath(implode("/", $this->getIterator()->toArray())),
             $parameters,
             $header
         );
-    }
-
-    /**
-     * @return string
-     */
-    private function modifyPath()
-    {
-        return implode("/", $this->getIterator()->toArray());
     }
 }
