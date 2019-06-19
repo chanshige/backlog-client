@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Chanshige\AuraDi\Config;
 
 use Aura\Di\Container;
@@ -9,8 +11,8 @@ use Chanshige\Backlog\Interfaces\RequestInterface;
 use Chanshige\Backlog\Resource\Issues;
 use Chanshige\Backlog\Resource\Space;
 use Chanshige\Backlog\Resource\Users;
-use Chanshige\SimpleCurl\Curl;
-use Chanshige\SimpleCurl\CurlInterface;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Class Common
@@ -24,7 +26,7 @@ final class Common extends ContainerConfig
      */
     public function define(Container $di)
     {
-        $di->types[CurlInterface::class] = $di->lazyNew(Curl::class);
+        $di->types[HttpClientInterface::class] = $di->lazy([HttpClient::class, 'create']);
         $di->types[RequestInterface::class] = $di->lazyNew(Request::class);
 
         $di->params[ResourceFactory::class]['map'] = [

@@ -1,25 +1,28 @@
 <?php
+declare(strict_types=1);
+
 namespace Chanshige\Backlog\Resource;
 
-use Chanshige\Backlog\Component\Parameters;
+use Chanshige\Backlog\Collection\Path;
 use Chanshige\Backlog\Interfaces\RequestInterface;
 use Chanshige\Backlog\Interfaces\UriInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * Class AbstractResource
  *
  * @package Chanshige\Backlog\Resource
  */
-abstract class AbstractResource extends Parameters
+abstract class AbstractResource extends Path
 {
+    /** @var RequestInterface */
+    private $http;
+
     /** @var UriInterface */
     private $uri;
 
-    /** @var RequestInterface */
-    private $request;
-
-    /** @var iterable */
-    private $params;
+    /** @var array */
+    private $parameters = [];
 
     /**
      * AbstractResource constructor.
@@ -32,66 +35,50 @@ abstract class AbstractResource extends Parameters
         array $input,
         UriInterface $uri,
         RequestInterface $request
-    ) {
+    )
+    {
         parent::__construct($input);
-        $this->uri = $uri;
-        $this->request = $request;
+        $this->http = $request;
+        $this->uri = $uri->withPath($this->buildPath());
     }
 
     /**
      * Return an instance with params.
      *
-     * @param iterable $params
+     * @param array $params
      * @return AbstractResource
      */
-    public function withParameters(iterable $params)
+    public function withParameters(array $params)
     {
         $clone = clone $this;
-        $clone->params = $params;
+        $clone->parameters = $params;
 
         return $clone;
     }
 
     /**
-     * GET Request.
+     * GET request.
      *
-     * @return string
+     * @return ResponseInterface
      */
     public function get()
     {
-        if (is_iterable($this->params)) {
-            $this->uri = $this->uri->withQuery($this->params);
+        if (is_array($this->parameters) && count($this->parameters) > 0) {
+            return $this->http->withQuery($this->parameters)
+                ->request(RequestInterface::GET, (string)$this->uri);
         }
 
-        return $this->invoke()->get();
+        return $this->http->request(RequestInterface::GET, (string)$this->uri);
     }
 
     /**
      * Post request.
      *
-     * @return mixed
+     * @return ResponseInterface
      */
     public function post()
     {
-        return $this->invoke(
-            http_build_query($this->params),
-            ['Content-Type: application/x-www-form-urlencoded']
-        )->post();
-    }
-
-    /**
-     * Invoke request.
-     *
-     * @param mixed $parameters
-     * @param array $header
-     * @return RequestInterface
-     */
-    private function invoke($parameters = null, $header = []): RequestInterface
-    {
-        return $this->request->__invoke(
-            (string)$this->uri->withPath(implode("/", $this->getIterator()->toArray())),
-            $parameters,
-            $header
-        );
+        return $this->http->withBody($this->parameters)
+            ->request(RequestInterface::POST, (string)$this->uri);
     }
 }

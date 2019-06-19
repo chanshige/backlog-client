@@ -1,6 +1,8 @@
 <?php
 namespace Chanshige\Backlog\Interfaces;
 
+use Symfony\Contracts\HttpClient\ResponseInterface;
+
 /**
  * Interface RequestInterface
  *
@@ -8,48 +10,49 @@ namespace Chanshige\Backlog\Interfaces;
  */
 interface RequestInterface
 {
-    /**
-     * Init request.
-     *
-     * @param string            $url
-     * @param string|array|null $parameters
-     * @param array             $header
-     * @return mixed (send request)
-     */
-    public function __invoke(string $url, $parameters = null, array $header = []);
+    /** @var string HTTP Method */
+    const GET = 'GET';
+    const POST = 'POST';
+    const PUT = 'PUT';
+    const PATCH = 'PATCH';
+    const DELETE = 'DELETE';
 
     /**
-     * Get.
-     *
-     * @return mixed
+     * @param string $method
+     * @param string $url
+     * @param array  $options
+     * @return ResponseInterface
      */
-    public function get();
+    public function request(string $method, string $url, array $options = []): ResponseInterface;
 
     /**
-     * Post.
-     *
+     * @param ResponseInterface|ResponseInterface[]|iterable $responses
+     * @param float                                          $timeout
      * @return mixed
      */
-    public function post();
+    public function stream($responses, float $timeout = 0);
 
     /**
-     * Put.
-     *
-     * @return mixed
+     * @param string $token
+     * @return RequestInterface
      */
-    public function put();
+    public function withAuthBearer(string $token): RequestInterface;
 
     /**
-     * Patch.
-     *
-     * @return mixed
+     * @param array $queries
+     * @return RequestInterface
      */
-    public function patch();
+    public function withQuery(array $queries): RequestInterface;
 
     /**
-     * Delete.
-     *
-     * @return mixed
+     * @param mixed $contents
+     * @return RequestInterface
      */
-    public function delete();
+    public function withBody($contents): RequestInterface;
+
+    /**
+     * @param array $headers
+     * @return RequestInterface
+     */
+    public function withHeaders(array $headers): RequestInterface;
 }

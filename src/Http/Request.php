@@ -1,181 +1,128 @@
 <?php
+declare(strict_types=1);
+
 namespace Chanshige\Backlog\Http;
 
 use Chanshige\Backlog\Interfaces\RequestInterface;
-use Chanshige\SimpleCurl\CurlInterface;
-use Chanshige\SimpleCurl\Exception\CurlException;
-
-use function json_unescaped_encode;
+use Exception\BacklogClientException;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
- * Class Request
+ * Class Request (Based in Symfony/HttpClient)
  *
  * @package Chanshige\Backlog\Http
  */
 final class Request implements RequestInterface
 {
-    /** @var int */
-    private const ERROR_MAX_RETRY = 3;
+    /** @var HttpClientInterface */
+    private $client;
 
-    /** @var CurlInterface */
-    private $curl;
+    /** @var array $authBearer Authentication */
+    private $authBearer = [];
 
     /** @var array */
-    private $parameters;
+    private $headers = [];
 
-    /** @var string|null */
-    private $header;
+    /** @var array */
+    private $queries = [];
+
+    /** @var array */
+    private $body = [];
 
     /**
      * Request constructor.
      *
-     * @param CurlInterface $curl
+     * @param HttpClientInterface $client
      */
-    public function __construct(CurlInterface $curl)
+    public function __construct(HttpClientInterface $client)
     {
-        $this->curl = $curl->init();
+        $this->client = $client;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     * @return ResponseInterface
      */
-    public function __invoke(string $url, $parameters = null, array $header = [])
+    public function request(string $method, string $url, array $options = []): ResponseInterface
     {
-        $this->setCommonOptions($url);
-        $this->header = $header;
-        $this->parameters = $parameters;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function get()
-    {
-        return $this->invoke();
-    }
-
-    /**
-     * @return string
-     */
-    public function post()
-    {
-        $this->curl->setOpt(CURLOPT_POST, true);
-        $this->setCommonPostFields();
-        return $this->invoke();
-    }
-
-    /**
-     * @return string
-     */
-    public function put()
-    {
-        $this->curl->setOpt(CURLOPT_PUT, true);
-        $this->setCommonPostFields();
-        return $this->invoke();
-    }
-
-    /**
-     * @return string
-     */
-    public function patch()
-    {
-        $this->curl->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
-        $this->setCommonPostFields();
-        return $this->invoke();
-    }
-
-    /**
-     * @return string
-     */
-    public function delete()
-    {
-        $this->curl->setOpt(CURLOPT_CUSTOMREQUEST, 'DELETE');
-        $this->setCommonPostFields();
-        return $this->invoke();
-    }
-
-    /**
-     * @param string $url
-     */
-    private function setCommonOptions(string $url): void
-    {
-        $this->curl->setOpt(CURLOPT_URL, $url);
-        $this->curl->setOpt(CURLOPT_PORT, 443);
-        $this->curl->setOpt(CURLOPT_SSL_VERIFYPEER, true);
-        $this->curl->setOpt(CURLOPT_SSL_VERIFYHOST, 2);
-        $this->curl->setOpt(CURLOPT_RETURNTRANSFER, true);
-    }
-
-    /**
-     * @return void
-     */
-    private function setCommonPostFields(): void
-    {
-        if (count($this->header) > 0) {
-            $this->curl->setOpt(CURLOPT_HTTPHEADER, $this->header);
-        }
-        if (!is_null($this->parameters)) {
-            $this->curl->setOpt(CURLOPT_POSTFIELDS, $this->parameters);
-        }
-    }
-
-    /**
-     * Request.
-     *
-     * @return string
-     */
-    private function invoke(): string
-    {
-        $retry = false;
-        $cnt = 0;
         try {
-            do {
-                $response = $this->curl->exec();
-                $info = $this->curl->getInfo();
-                if ($info['http_code'] === 500 || $info['http_code'] === 503) {
-                    $this->pauseOnRetry(++$cnt, $info['http_code']);
-                    $retry = true;
-                }
-            } while ($retry);
+            $options = count($options) > 0 ? $options : $this->buildOptions();
 
-            return $response;
-        } catch (CurlException $e) {
-            return json_unescaped_encode($this->errorFormat($e->getMessage(), $e->getCode()));
-        } finally {
-            $this->curl->close();
+            return $this->client->request($method, $url, $options);
+        } catch (TransportExceptionInterface $e) {
+            throw new BacklogClientException($e->getMessage(), $e->getCode());
         }
     }
 
     /**
-     * @param int $retries
-     * @param int $status
-     * @throws CurlException
+     * {@inheritDoc}
      */
-    private function pauseOnRetry(int $retries, int $status)
+    public function stream($responses, float $timeout = null)
     {
-        if ($retries <= self::ERROR_MAX_RETRY) {
-            usleep((int)(pow(4, $retries) * 100000) + 600000);
-            return;
-        }
-        throw new CurlException('Maximum number of retry attempts - ' . $retries . ' reached', $status);
+        return $this->client->stream($responses, $timeout);
     }
 
     /**
-     * @param string  $msg
-     * @param integer $code
+     * {@inheritDoc]
+     */
+    public function withAuthBearer(string $token): RequestInterface
+    {
+        $clone = clone $this;
+        $clone->authBearer = [
+            'auth_bearer' => $token
+        ];
+
+        return $clone;
+    }
+
+    /**
+     * {@inheritDoc]
+     */
+    public function withQuery(array $queries): RequestInterface
+    {
+        $clone = clone $this;
+        $clone->queries = [
+            'query' => $queries
+        ];
+
+        return $clone;
+    }
+
+    /**
+     * {@inheritDoc]
+     */
+    public function withBody($contents): RequestInterface
+    {
+        $clone = clone $this;
+        $clone->body = [
+            'body' => $contents
+        ];
+
+        return $clone;
+    }
+
+    /**
+     * {@inheritDoc]
+     */
+    public function withHeaders(array $headers): RequestInterface
+    {
+        $clone = clone $this;
+        $clone->headers = [
+            'headers' => $headers
+        ];
+
+        return $clone;
+    }
+
+    /**
+     * Build request options.
+     *
      * @return array
      */
-    private function errorFormat(string $msg, ?int $code = null)
+    private function buildOptions()
     {
-        return [
-            'errors' => [
-                [
-                    'message' => $msg,
-                    'code' => $code
-                ]
-            ]
-        ];
+        return array_merge($this->authBearer, $this->headers, $this->body);
     }
 }

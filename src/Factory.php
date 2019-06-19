@@ -6,6 +6,7 @@ namespace Chanshige\Backlog;
 use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
 use Chanshige\AuraDi\Config\Common;
+use Chanshige\Backlog\Provider\ClientProvider;
 use Exception\BacklogClientException;
 use Exception;
 
@@ -19,23 +20,20 @@ final class Factory
     /**
      * Return a new instance.
      *
-     * @param string $name       instance name.
-     * @param array  $params     constructor inject
-     * @param array  $configured ContainerConfig classes
-     * @param bool   $resolve    auto-resolver
+     * @param string $spaceUri
+     * @param string $apiKey
      * @return object
      */
-    public function newInstance(
-        string $name,
-        array $params = [],
-        array $configured = [],
-        bool $resolve = ContainerBuilder::AUTO_RESOLVE
-    ) {
+    public function newInstance(string $spaceUri, string $apiKey)
+    {
         try {
-            $configured = count($configured) > 0 ? $configured : [Common::class];
+            $config = [
+                'spaceUri' => $spaceUri,
+                'apiKey' => $apiKey
+            ];
 
-            return $this->newContainer($configured, $resolve)
-                ->newInstance($name, $params);
+            return $this->newContainer([Common::class], ContainerBuilder::AUTO_RESOLVE)
+                ->newInstance(ClientProvider::class, $config);
         } catch (Exception $e) {
             throw new BacklogClientException($e->getMessage());
         }

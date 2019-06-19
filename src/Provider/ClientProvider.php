@@ -1,7 +1,5 @@
 <?php
-declare(strict_types=1);
-
-namespace Chanshige\Backlog;
+namespace Chanshige\Backlog\Provider;
 
 use Chanshige\Backlog\Factory\ResourceFactory;
 use Chanshige\Backlog\Http\Uri;
@@ -10,15 +8,18 @@ use Chanshige\Backlog\Resource\Space;
 use Chanshige\Backlog\Resource\Users;
 
 /**
- * Class Client
+ * Class ClientProvider
  *
  * @method Issues issues($value = null)
  * @method Space space($value = null)
  * @method Users users($value = null)
- * @package Chanshige\Backlog
+ * @package Chanshige\Backlog\Provider
  */
-final class Client
+final class ClientProvider
 {
+    /** @var string */
+    private const API_VERSION = 'api/v2';
+
     /** @var ResourceFactory */
     private $resource;
 
@@ -39,7 +40,8 @@ final class Client
         ResourceFactory $resource,
         string $spaceUri,
         string $apiKey
-    ) {
+    )
+    {
         $this->resource = $resource;
         $this->spaceUri = $spaceUri;
         $this->apiKey = $apiKey;
@@ -55,7 +57,8 @@ final class Client
         return $this->resource->newInstance(
             $name,
             $arguments,
-            new Uri($this->spaceUri, $this->apiKey)
+            new Uri($this->spaceUri, $this->apiKey, self::API_VERSION)
         );
     }
 }
+

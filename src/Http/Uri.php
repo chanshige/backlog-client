@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Chanshige\Backlog\Http;
 
 use Chanshige\Backlog\Interfaces\UriInterface;
@@ -13,13 +15,14 @@ final class Uri implements UriInterface
     /** @var string */
     public $scheme = 'https';
 
+    /** @var int */
     private $port = 443;
 
     /** @var string */
     public $host = '';
 
     /** @var string */
-    public $path = 'api/v2';
+    public $path = '';
 
     /** @var array */
     public $query = [];
