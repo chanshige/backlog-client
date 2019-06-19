@@ -123,6 +123,11 @@ final class Request implements RequestInterface
      */
     private function buildOptions()
     {
-        return array_merge($this->authBearer, $this->headers, $this->body);
+        return array_merge(
+            $this->authBearer,
+            $this->headers,
+            $this->queries,
+            $this->body
+        );
     }
 }

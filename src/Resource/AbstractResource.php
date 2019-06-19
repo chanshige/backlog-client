@@ -35,8 +35,7 @@ abstract class AbstractResource extends Path
         array $input,
         UriInterface $uri,
         RequestInterface $request
-    )
-    {
+    ) {
         parent::__construct($input);
         $this->http = $request;
         $this->uri = $uri->withPath($this->buildPath());
@@ -45,13 +44,14 @@ abstract class AbstractResource extends Path
     /**
      * Return an instance with params.
      *
-     * @param array $params
+     * @param iterable $params
      * @return AbstractResource
      */
-    public function withParameters(array $params)
+    public function withParameters(iterable $params)
     {
         $clone = clone $this;
-        $clone->parameters = $params;
+        $clone->parameters = $params instanceof \Iterator ?
+            iterator_to_array($params) : $params;
 
         return $clone;
     }
@@ -80,5 +80,20 @@ abstract class AbstractResource extends Path
     {
         return $this->http->withBody($this->parameters)
             ->request(RequestInterface::POST, (string)$this->uri);
+    }
+
+    public function put()
+    {
+        // TODO: implements
+    }
+
+    public function patch()
+    {
+        // TODO: implements
+    }
+
+    public function delete()
+    {
+        // TODO: implements
     }
 }
