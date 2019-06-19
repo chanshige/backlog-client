@@ -19,6 +19,9 @@ final class Request implements RequestInterface
     /** @var HttpClientInterface */
     private $client;
 
+    /** @var array */
+    private $timeout = [];
+
     /** @var array $authBearer Authentication */
     private $authBearer = [];
 
@@ -65,6 +68,32 @@ final class Request implements RequestInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function withTimeout(float $float): RequestInterface
+    {
+        $clone = clone $this;
+        $clone->timeout = [
+            'timeout' => $float
+        ];
+
+        return $clone;
+    }
+
+    /**
+     * {@inheritDoc]
+     */
+    public function withHeaders(array $headers): RequestInterface
+    {
+        $clone = clone $this;
+        $clone->headers = [
+            'headers' => $headers
+        ];
+
+        return $clone;
+    }
+
+    /**
      * {@inheritDoc]
      */
     public function withAuthBearer(string $token): RequestInterface
@@ -104,19 +133,6 @@ final class Request implements RequestInterface
     }
 
     /**
-     * {@inheritDoc]
-     */
-    public function withHeaders(array $headers): RequestInterface
-    {
-        $clone = clone $this;
-        $clone->headers = [
-            'headers' => $headers
-        ];
-
-        return $clone;
-    }
-
-    /**
      * Build request options.
      *
      * @return array
@@ -124,6 +140,7 @@ final class Request implements RequestInterface
     private function buildOptions()
     {
         return array_merge(
+            $this->timeout,
             $this->authBearer,
             $this->headers,
             $this->queries,

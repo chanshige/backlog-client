@@ -1,6 +1,7 @@
 <?php
 namespace Chanshige\Backlog\Interfaces;
 
+use Chanshige\Backlog\Http\RequestTest;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
@@ -35,6 +36,18 @@ interface RequestInterface
     public function stream($responses, float $timeout = 0);
 
     /**
+     * @param float $float
+     * @return RequestInterface
+     */
+    public function withTimeout(float $float): RequestInterface;
+
+    /**
+     * @param array $headers
+     * @return RequestInterface
+     */
+    public function withHeaders(array $headers): RequestInterface;
+
+    /**
      * @param string $token
      * @return RequestInterface
      */
@@ -51,10 +64,4 @@ interface RequestInterface
      * @return RequestInterface
      */
     public function withBody($contents): RequestInterface;
-
-    /**
-     * @param array $headers
-     * @return RequestInterface
-     */
-    public function withHeaders(array $headers): RequestInterface;
 }
