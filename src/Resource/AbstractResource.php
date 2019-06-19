@@ -16,7 +16,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 abstract class AbstractResource extends Path
 {
     /** @var RequestInterface */
-    private $http;
+    private $request;
 
     /** @var UriInterface */
     private $uri;
@@ -37,7 +37,7 @@ abstract class AbstractResource extends Path
         RequestInterface $request
     ) {
         parent::__construct($input);
-        $this->http = $request;
+        $this->request = $request;
         $this->uri = $uri->withPath($this->buildPath());
     }
 
@@ -57,41 +57,60 @@ abstract class AbstractResource extends Path
     }
 
     /**
-     * GET request.
+     * Get.
      *
      * @return ResponseInterface
      */
     public function get()
     {
-        if (is_array($this->parameters) && count($this->parameters) > 0) {
-            return $this->http->withQuery($this->parameters)
-                ->request(RequestInterface::GET, (string)$this->uri);
+        if (count($this->parameters) > 0) {
+            $request = $this->request->withQuery($this->parameters);
+
+            return $request(RequestInterface::GET, (string)$this->uri);
         }
 
-        return $this->http->request(RequestInterface::GET, (string)$this->uri);
+        return ($this->request)(RequestInterface::GET, (string)$this->uri);
     }
 
     /**
-     * Post request.
+     * Post.
      *
      * @return ResponseInterface
      */
     public function post()
     {
-        return $this->http->withBody($this->parameters)
-            ->request(RequestInterface::POST, (string)$this->uri);
+        $request = $this->request->withBody($this->parameters);
+
+        return $request(RequestInterface::POST, (string)$this->uri);
     }
 
+    /**
+     * Put.
+     *
+     * @return ResponseInterface
+     */
     public function put()
     {
-        // TODO: implements
+        $request = $this->request->withBody($this->parameters);
+
+        return $request(RequestInterface::PUT, (string)$this->uri);
     }
 
+    /**
+     * Patch.
+     *
+     * @return ResponseInterface
+     */
     public function patch()
     {
-        // TODO: implements
+        $request = $this->request->withBody($this->parameters);
+
+        return $request(RequestInterface::PATCH, (string)$this->uri);
     }
 
+    /**
+     * Delete.
+     */
     public function delete()
     {
         // TODO: implements

@@ -45,7 +45,7 @@ final class Request implements RequestInterface
      * {@inheritDoc}
      * @return ResponseInterface
      */
-    public function request(string $method, string $url, array $options = []): ResponseInterface
+    public function __invoke(string $method, string $url, array $options = []): ResponseInterface
     {
         try {
             $options = count($options) > 0 ? $options : $this->buildOptions();

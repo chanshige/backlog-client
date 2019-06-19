@@ -40,8 +40,7 @@ final class ClientProvider
         ResourceFactory $resource,
         string $spaceUri,
         string $apiKey
-    )
-    {
+    ) {
         $this->resource = $resource;
         $this->spaceUri = $spaceUri;
         $this->apiKey = $apiKey;

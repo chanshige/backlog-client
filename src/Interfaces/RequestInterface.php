@@ -18,12 +18,14 @@ interface RequestInterface
     const DELETE = 'DELETE';
 
     /**
+     * Requests an HTTP resource.
+     *
      * @param string $method
      * @param string $url
      * @param array  $options
      * @return ResponseInterface
      */
-    public function request(string $method, string $url, array $options = []): ResponseInterface;
+    public function __invoke(string $method, string $url, array $options = []): ResponseInterface;
 
     /**
      * @param ResponseInterface|ResponseInterface[]|iterable $responses
