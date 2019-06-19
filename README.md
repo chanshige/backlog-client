@@ -1,25 +1,31 @@
 # backlog-client
 
+It internally uses Symfony HttpClient component.
+
 ## Usage
 
 ```php
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-use Chanshige\Backlog\Client;
 use Chanshige\Backlog\Factory;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
-// backlog config
-$config = [
-    'spaceUri' => 'space.backlog-uri.example',
-    'apiKey' => 'your-api-key'
-];
-
-$backlog = (new Factory)->newInstance(Client::class, $config);
+$backlog = (new Factory)->newInstance(
+    'space.backlog-uri.example',
+    'your-api-key'
+);
 
 //[GET] backlog info
+/**
+ * @see https://symfony.com/doc/current/components/http_client.html 
+ * @var ResponseInterface $response 
+ */
 $response = $backlog->space()->get();
 
-// toArray
-var_dump(json_decode($response, true));
+// raw data.
+var_dump($response->getContent());
+
+// array data.
+var_dump($response->toArray());
 ```
