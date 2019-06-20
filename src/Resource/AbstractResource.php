@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Chanshige\Backlog\Resource;
 
-use Chanshige\Backlog\Collection\Path;
+use Chanshige\Backlog\Collection\PathObject;
 use Chanshige\Backlog\Interfaces\RequestInterface;
 use Chanshige\Backlog\Interfaces\UriInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -13,7 +13,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  *
  * @package Chanshige\Backlog\Resource
  */
-abstract class AbstractResource extends Path
+abstract class AbstractResource extends PathObject
 {
     /** @var RequestInterface */
     private $request;
@@ -38,7 +38,7 @@ abstract class AbstractResource extends Path
     ) {
         parent::__construct($input);
         $this->request = $request;
-        $this->uri = $uri->withPath($this->buildPath());
+        $this->uri = $uri;
     }
 
     /**
@@ -64,12 +64,13 @@ abstract class AbstractResource extends Path
     public function get()
     {
         if (count($this->parameters) > 0) {
-            $request = $this->request->withQuery($this->parameters);
-
-            return $request(RequestInterface::GET, (string)$this->uri);
+            return $this->invoke(
+                $this->request->withQuery($this->parameters),
+                RequestInterface::GET
+            );
         }
 
-        return ($this->request)(RequestInterface::GET, (string)$this->uri);
+        return $this->invoke($this->request, RequestInterface::GET);
     }
 
     /**
@@ -79,9 +80,10 @@ abstract class AbstractResource extends Path
      */
     public function post()
     {
-        $request = $this->request->withBody($this->parameters);
-
-        return $request(RequestInterface::POST, (string)$this->uri);
+        return $this->invoke(
+            $this->request->withBody($this->parameters),
+            RequestInterface::POST
+        );
     }
 
     /**
@@ -91,9 +93,10 @@ abstract class AbstractResource extends Path
      */
     public function put()
     {
-        $request = $this->request->withBody($this->parameters);
-
-        return $request(RequestInterface::PUT, (string)$this->uri);
+        return $this->invoke(
+            $this->request->withBody($this->parameters),
+            RequestInterface::PUT
+        );
     }
 
     /**
@@ -103,9 +106,10 @@ abstract class AbstractResource extends Path
      */
     public function patch()
     {
-        $request = $this->request->withBody($this->parameters);
-
-        return $request(RequestInterface::PATCH, (string)$this->uri);
+        return $this->invoke(
+            $this->request->withBody($this->parameters),
+            RequestInterface::PATCH
+        );
     }
 
     /**
@@ -114,5 +118,17 @@ abstract class AbstractResource extends Path
     public function delete()
     {
         // TODO: implements
+    }
+
+    /**
+     * Invoke request.
+     *
+     * @param RequestInterface $request
+     * @param string           $method
+     * @return ResponseInterface
+     */
+    private function invoke($request, $method)
+    {
+        return $request($method, (string)$this->uri->withPath($this->createPath()));
     }
 }

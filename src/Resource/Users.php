@@ -16,5 +16,5 @@ namespace Chanshige\Backlog\Resource;
  */
 final class Users extends AbstractResource
 {
-    protected $name = 'users';
+    protected $name = ['users'];
 }

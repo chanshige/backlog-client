@@ -15,5 +15,34 @@ declare(strict_types=1);
  */
 function json_unescaped_encode(array $data)
 {
-    return \json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+}
+
+/**
+ * @param array $arr
+ * @return mixed
+ */
+function array_value_first(array $arr)
+{
+    $key = array_key_first($arr);
+    if ($key === null) {
+        return $key;
+    }
+
+    return $arr[$key];
+}
+
+/**
+ * @param array $arr
+ * @return mixed
+ * @version PHP 7 < 7.3.0
+ */
+if (!function_exists('array_key_first')) {
+    function array_key_first(array $arr)
+    {
+        foreach (array_keys($arr) as $key) {
+            return $key;
+        }
+        return null;
+    }
 }

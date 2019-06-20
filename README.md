@@ -16,18 +16,27 @@ $backlog = (new Factory)->newInstance(
     'your-api-key'
 );
 
-//[GET] backlog info
+// スペース情報の取得
+$space = $backlog->space();
+
 /**
  * @see https://symfony.com/doc/current/components/http_client.html 
  * @var ResponseInterface $response 
  */
-$response = $backlog->space()->get();
+$response = $space->get();
 
-// raw data.
-var_dump($response->getContent());
-
-// array data.
-var_dump($response->toArray());
+try {
+    // HTTP status code
+    $statusCode = $response->getStatusCode();
+    
+    // Response body as a string
+    $body = $response->getContent();
+    
+    // Response body decoded as array, typically from a JSON payload.
+    $toArray = $response->toArray();
+} catch (Throwable $e) {
+    echo $e->getMessage();
+}
 ```
 
 ### QA

@@ -6,7 +6,7 @@ namespace Chanshige\Backlog;
 use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
 use Chanshige\AuraDi\Config\Common;
-use Chanshige\Backlog\Provider\ClientProvider;
+use Chanshige\Backlog\Provider\ResourceProvider;
 use Exception\BacklogClientException;
 use Exception;
 
@@ -33,7 +33,7 @@ final class Factory
             ];
 
             return $this->newContainer([Common::class], ContainerBuilder::AUTO_RESOLVE)
-                ->newInstance(ClientProvider::class, $config);
+                ->newInstance(ResourceProvider::class, $config);
         } catch (Exception $e) {
             throw new BacklogClientException($e->getMessage());
         }

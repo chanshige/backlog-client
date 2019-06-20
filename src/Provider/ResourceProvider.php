@@ -8,14 +8,14 @@ use Chanshige\Backlog\Resource\Space;
 use Chanshige\Backlog\Resource\Users;
 
 /**
- * Class ClientProvider
+ * Class ResourceProvider
  *
  * @method Issues issues($value = null)
  * @method Space space($value = null)
  * @method Users users($value = null)
  * @package Chanshige\Backlog\Provider
  */
-final class ClientProvider
+final class ResourceProvider
 {
     /** @var string */
     private const API_VERSION = 'api/v2';
@@ -47,15 +47,17 @@ final class ClientProvider
     }
 
     /**
+     * Call resource object.
+     *
      * @param string $name
-     * @param array  $arguments
+     * @param array  $args
      * @return object
      */
-    public function __call(string $name, array $arguments)
+    public function __call(string $name, array $args)
     {
         return $this->resource->newInstance(
             $name,
-            $arguments,
+            $args,
             new Uri($this->spaceUri, $this->apiKey, self::API_VERSION)
         );
     }

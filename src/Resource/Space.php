@@ -13,5 +13,5 @@ namespace Chanshige\Backlog\Resource;
  */
 final class Space extends AbstractResource
 {
-    protected $name = 'space';
+    protected $name = ['space'];
 }
