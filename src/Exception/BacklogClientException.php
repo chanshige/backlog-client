@@ -6,6 +6,6 @@ namespace Exception;
  *
  * @package Exception
  */
-final class BacklogClientException extends \LogicException
+final class BacklogClientException extends \LogicException implements ExceptionInterface
 {
 }

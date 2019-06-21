@@ -10,7 +10,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
- * Class Request (Based in Symfony/HttpClient)
+ * Class Request (Symfony/HttpClient)
  *
  * @package Chanshige\Backlog\Http
  */
