@@ -30,4 +30,23 @@ final class PathObjectTest extends BaseTestCase
             $this->assertEquals($expected, $path->createPath());
         }, $this, PathObject::class)();
     }
+
+    /**
+     * Protectedメソッドのテスト
+     */
+    public function testCreatePathWithoutConstructorParam()
+    {
+        Closure::bind(function () {
+            $path = (new PathObject)
+                ->foo(1)
+                ->bar(2)
+                ->baz(3)
+                ->qux()
+                ->quux()
+                ->corge(4);
+
+            $expected = 'foo/1/bar/2/baz/3/qux/quux/corge/4';
+            $this->assertEquals($expected, $path->createPath());
+        }, $this, PathObject::class)();
+    }
 }
