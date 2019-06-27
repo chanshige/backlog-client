@@ -5,6 +5,7 @@ namespace Chanshige\Backlog;
 
 use Aura\Di\Container;
 use Aura\Di\ContainerBuilder;
+use Aura\Di\ContainerConfigInterface;
 use Chanshige\AuraDi\Config\Common;
 use Chanshige\Backlog\Provider\ResourceProvider;
 use Exception\BacklogClientException;
@@ -17,6 +18,21 @@ use Exception;
  */
 final class Factory
 {
+    /** @var ContainerConfigInterface[]|array */
+    private $configClasses = [];
+
+    /**
+     * Factory constructor.
+     *
+     * @param array $configClasses A list of ContainerConfig classes to
+     *                             instantiate and invoke for configuring the Container.
+     */
+    public function __construct(array $configClasses = [])
+    {
+        // container inject
+        $this->configClasses = $configClasses ?: [Common::class];
+    }
+
     /**
      * Return a new instance.
      *
@@ -32,7 +48,7 @@ final class Factory
                 'apiKey' => $apiKey
             ];
 
-            return $this->newContainer([Common::class], ContainerBuilder::AUTO_RESOLVE)
+            return $this->newContainer($this->configClasses, ContainerBuilder::AUTO_RESOLVE)
                 ->newInstance(ResourceProvider::class, $config);
         } catch (Exception $e) {
             throw new BacklogClientException($e->getMessage());
