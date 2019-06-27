@@ -21,17 +21,17 @@ final class FactoryTest extends BaseTestCase
      * @expectedException \Exception\BacklogClientException
      * @expectedExceptionMessage Container configs must implement ContainerConfigInterface
      */
-    public function testInvalidContainerInstance()
+    public function testExceptionNewInstance()
     {
-        (new Factory)->newContainer([[]]);
+        (new Factory([\stdClass::class]))->newInstance('backlog.example', 'api-key');
     }
 
     /**
      * @expectedException \Exception\BacklogClientException
      * @expectedExceptionMessage Container configs must implement ContainerConfigInterface
      */
-    public function testFailedNewInstance()
+    public function testExceptionNewContainer()
     {
-        (new Factory([\stdClass::class]))->newInstance('backlog.example', 'api-key');
+        (new Factory)->newContainer([[]]);
     }
 }
