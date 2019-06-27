@@ -2,6 +2,7 @@
 namespace Chanshige\Backlog\Http;
 
 use Chanshige\Backlog\BaseTestCase;
+use Chanshige\Backlog\Interfaces\RequestInterface;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Closure;
@@ -38,5 +39,15 @@ final class RequestTest extends BaseTestCase
             ];
             $this->assertEquals($expected, $request->buildOptions());
         }, $this, Request::class)();
+    }
+
+    /**
+     * @expectedException \Exception\BacklogClientException
+     * @expectedExceptionMessage The response factory iterator passed to MockHttpClient is empty.
+     */
+    public function testException()
+    {
+        $request = (new Request(new MockHttpClient(new \ArrayIterator())));
+        $request(RequestInterface::GET, 'https://backlog-cilent.example');
     }
 }
