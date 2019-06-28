@@ -70,4 +70,14 @@ final class BacklogClientTest extends BaseTestCase
         $expected = 'https://test.baclog.example/api/v2/issues?apiKey=api-key-fake';
         $this->assertEquals($expected, $issues->getInfo('url'));
     }
+
+    /**
+     * @expectedException \Exception\BacklogClientException
+     * @expectedExceptionMessage Oops!! resource name:users is undefined.
+     */
+    public function testUndefinedResourceException()
+    {
+        // Fake\Common
+        $this->backlog->users();
+    }
 }

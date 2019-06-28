@@ -8,7 +8,6 @@ use Chanshige\Backlog\Http\Request;
 use Chanshige\Backlog\Interfaces\RequestInterface;
 use Chanshige\Backlog\Resource\Issues;
 use Chanshige\Backlog\Resource\Space;
-use Chanshige\Backlog\Resource\Users;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -30,7 +29,6 @@ class Common extends ContainerConfig
         $di->params[ResourceFactory::class]['map'] = [
             'issues' => $di->newFactory(Issues::class),
             'space' => $di->newFactory(Space::class),
-            'users' => $di->newFactory(Users::class),
         ];
     }
 }
