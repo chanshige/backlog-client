@@ -31,8 +31,8 @@
   },
   "require": {
     "php": ">=7.1",
-    "aura/di": "^3.0",
-    "symfony/http-client": "^4.0",
+    "aura/di": "3.4.0",
+    "symfony/http-client": "4.3.2",
     "ext-curl": "*",
     "ext-json": "*"
   },
