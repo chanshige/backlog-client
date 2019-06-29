@@ -11,21 +11,21 @@ require __DIR__ . '/vendor/autoload.php';
 use Chanshige\Backlog\Factory;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
+/** @var \Chanshige\Backlog\Provider\ResourceProvider $backlog */
 $backlog = (new Factory)->newInstance(
     'space.backlog-uri.example',
     'your-api-key'
 );
 
-// スペース情報の取得
+/** スペース情報の取得 [GET] **/
 $space = $backlog->space();
 
-/**
- * @see https://symfony.com/doc/current/components/http_client.html 
- * @var ResponseInterface $response 
- */
-$response = $space->get();
-
 try {
+    /**
+     * @var ResponseInterface $response 
+     */
+    $response = $space->get();
+
     // HTTP status code
     $statusCode = $response->getStatusCode();
     
@@ -34,6 +34,28 @@ try {
     
     // Response body decoded as array, typically from a JSON payload.
     $toArray = $response->toArray();
+} catch (Throwable $e) {
+    echo $e->getMessage();
+}
+
+/** 課題の追加 [POST] */
+
+// POSTするパラメーターの配列を生成
+$param = new \Chanshige\Backlog\Collection\ArrayList();
+$param->set('projectId', 123456)
+    ->set('summary', 'api_post')
+    ->set('issueTypeId', 123456)
+    ->set('priorityId', 3);
+
+// withParameters メソッドにセット
+$issues = $backlog->issues()->withParameters($param);
+
+try {
+    //POST request.
+    $response = $issues->post();
+    
+    // Response body as a string
+    $body = $response->getContent();
 } catch (Throwable $e) {
     echo $e->getMessage();
 }
