@@ -1,0 +1,54 @@
+{
+  "name": "chanshige/backlog-client",
+  "description": "Backlog(Nulab,inc.) API v2 wrapper.",
+  "keywords": [
+    "backlog",
+    "api",
+    "wrapper"
+  ],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Shigeki Tanaka",
+      "email": "dev@shigeki.tokyo"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "extend.functions.php"
+    ],
+    "psr-4": {
+      "Exception\\": "src/Exception/",
+      "Chanshige\\Backlog\\": "src/",
+      "Chanshige\\AuraDi\\Config\\": "config/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Chanshige\\Backlog\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=7.1",
+    "aura/di": "3.4.0",
+    "symfony/http-client": "4.3.2",
+    "ext-curl": "*",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "*",
+    "squizlabs/php_codesniffer": "*",
+    "phpmd/phpmd": "*",
+    "phpunit/phpunit": "^7.0",
+    "koriym/printo": "*"
+  },
+  "scripts": {
+    "test": [
+      "phpunit"
+    ],
+    "cs": [
+      "php-cs-fixer fix --dry-run --diff --diff-format udiff ./src"
+    ]
+  }
+}
