@@ -10,15 +10,6 @@ declare(strict_types=1);
  */
 
 /**
- * @param array $data
- * @return false|string
- */
-function json_unescaped_encode(array $data)
-{
-    return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-}
-
-/**
  * @param array $arr
  * @return mixed
  */

@@ -29,7 +29,6 @@ final class Factory
      */
     public function __construct(array $configClasses = [])
     {
-        // container inject
         $this->configClasses = $configClasses ?: [Common::class];
     }
 
