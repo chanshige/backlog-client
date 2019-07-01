@@ -6,6 +6,7 @@ namespace Chanshige\Backlog\Resource;
 use Chanshige\Backlog\Collection\PathObject;
 use Chanshige\Backlog\Interfaces\RequestInterface;
 use Chanshige\Backlog\Interfaces\UriInterface;
+use Exception\BacklogClientException;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
@@ -46,12 +47,17 @@ abstract class AbstractResource extends PathObject
      *
      * @param iterable $params
      * @return AbstractResource
+     * @throws BacklogClientException
      */
     public function withParameters(iterable $params)
     {
+        $itr = $params instanceof \Iterator ? $params : new \ArrayIterator($params);
+        if (!$itr->valid()) {
+            throw new BacklogClientException('The iterable params passed to RequestInterface is empty.');
+        }
+
         $clone = clone $this;
-        $clone->parameters = $params instanceof \Iterator ?
-            iterator_to_array($params) : $params;
+        $clone->parameters = iterator_to_array($itr);
 
         return $clone;
     }

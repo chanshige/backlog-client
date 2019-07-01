@@ -80,4 +80,24 @@ final class BacklogClientTest extends BaseTestCase
         // Fake\Common
         $this->backlog->users();
     }
+
+    /**
+     * @expectedException \Exception\BacklogClientException
+     * @expectedExceptionMessage The iterable params passed to RequestInterface is empty.
+     *
+     */
+    public function testWithParameterPassedToEmptyIt()
+    {
+        $this->backlog->issues()->withParameters(new ArrayList)->get();
+    }
+
+    /**
+     * @expectedException \Exception\BacklogClientException
+     * @expectedExceptionMessage The iterable params passed to RequestInterface is empty.
+     *
+     */
+    public function testWithParameterPassedToEmptyArray()
+    {
+        $this->backlog->issues()->withParameters([])->get();
+    }
 }
