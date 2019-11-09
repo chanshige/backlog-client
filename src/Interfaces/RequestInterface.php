@@ -1,8 +1,8 @@
 <?php
 namespace Chanshige\Backlog\Interfaces;
 
-use Chanshige\Backlog\Http\RequestTest;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Traversable;
 
 /**
  * Interface RequestInterface
@@ -54,10 +54,10 @@ interface RequestInterface
     public function withAuthBearer(string $token): RequestInterface;
 
     /**
-     * @param array $queries
+     * @param iterable $queries
      * @return RequestInterface
      */
-    public function withQuery(array $queries): RequestInterface;
+    public function withQuery(iterable $queries): RequestInterface;
 
     /**
      * @param mixed $contents

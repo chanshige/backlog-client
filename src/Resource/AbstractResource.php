@@ -8,6 +8,8 @@ use Chanshige\Backlog\Interfaces\RequestInterface;
 use Chanshige\Backlog\Interfaces\UriInterface;
 use Exception\BacklogClientException;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Chanshige\Backlog\Collection\ArrayList;
+use Traversable;
 
 /**
  * Class AbstractResource
@@ -51,13 +53,13 @@ abstract class AbstractResource extends PathObject
      */
     public function withParameters(iterable $params)
     {
-        $itr = $params instanceof \Iterator ? $params : new \ArrayIterator($params);
+        $itr = $params instanceof Traversable ? $params : new ArrayList($params);
         if (!$itr->valid()) {
             throw new BacklogClientException('The iterable params passed to RequestInterface is empty.');
         }
 
         $clone = clone $this;
-        $clone->parameters = iterator_to_array($itr);
+        $clone->parameters = $itr;
 
         return $clone;
     }

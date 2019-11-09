@@ -8,6 +8,7 @@ use Exception\BacklogClientException;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Traversable;
 
 /**
  * Class Request (Symfony/HttpClient)
@@ -109,11 +110,11 @@ final class Request implements RequestInterface
     /**
      * {@inheritDoc]
      */
-    public function withQuery(array $queries): RequestInterface
+    public function withQuery(iterable $queries): RequestInterface
     {
         $clone = clone $this;
         $clone->queries = [
-            'query' => $queries
+            'query' => ($queries instanceof Traversable ? iterator_to_array($queries) : $queries)
         ];
 
         return $clone;
